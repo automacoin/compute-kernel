@@ -4,7 +4,7 @@ const direction;
 (function (direction) {
     direction[direction["LEFT"] = 0] = "LEFT";
     direction[direction["RIGHT"] = 1] = "RIGHT";
-    direction[direction["STOP"] = 1] = "STOP";
+    direction[direction["STOP"] = 2] = "STOP";
 })(direction || (direction = {}));
 
 class TransitionResult {
@@ -33,6 +33,46 @@ class TuringMachine {
         this.states = state;
         this.transitionTable = transitionTable;
     }
+}
+
+class Tape {
+    constructor() {
+        this._tape = [0];
+        this._head = 0;
+        this.blank = 'BLANK';
+    }
+
+    moveRight() {
+        if (this._head === this._tape.length - 1) {
+            this._tape.push(this.blank);
+        }
+        this._head++
+    }
+
+    moveLeft() {
+        if(this._head === 0){
+            this._tape.unshift(this.blank);
+        }
+        this._head--;
+    }
+
+    write(color) {
+        this._tape[this._head] = color;
+    } 
+
+    get symbol(){
+        return this._tape[this._head]
+    }
+
+    print() {
+        return this._tape;
+    }
+}
+
+function runStep(m, t) {
+
+    tr = m.transitionTable[m.state.control][t.symbol]
+    
 }
 
 function initTuringMachine(states, colors, blank, numberTM) {
