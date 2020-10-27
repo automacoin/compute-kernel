@@ -73,6 +73,25 @@ function runStep(m, t) {
 
     tr = m.transitionTable[m.state.control][t.symbol]
     
+    t.write(tr.writeSymbol);
+    m.state.control(tr.control);
+
+    if(tr.control === m.haltingState) {
+        return 'HALT';
+    }
+
+    switch(tr.dir) {
+        case direction.RIGHT:
+            t.moveRight();
+            break;  
+        case direction.LEFT:
+            t.moveLeft();
+            break;
+        default:
+            return 
+    }
+
+
 }
 
 function initTuringMachine(states, colors, blank, numberTM) {
