@@ -1,4 +1,4 @@
-const direction;
+let direction;
 
 /**@enum direction*/
 (function (direction) {
@@ -24,14 +24,14 @@ class TuringMachineState {
 }
 
 class TuringMachine {
-    constructor(colors, states, haltingState, state, initialControlState, transitionTable) {
+    constructor(colors, states, blank, haltingState, state, initialControlState, transitionTable) {
         this.colors = colors;
         this.states = states;
         this.haltingState = haltingState;
         this.initialControlState = initialControlState;
         this.blank = blank;
         this.states = state;
-        this.transitionTable = transitionTable;
+        this.transitionTable = [];
     }
 }
 
@@ -50,7 +50,7 @@ class Tape {
     }
 
     moveLeft() {
-        if(this._head === 0){
+        if (this._head === 0) {
             this._tape.unshift(this.blank);
         }
         this._head--;
@@ -58,9 +58,9 @@ class Tape {
 
     write(color) {
         this._tape[this._head] = color;
-    } 
+    }
 
-    get symbol(){
+    get symbol() {
         return this._tape[this._head]
     }
 
@@ -72,25 +72,26 @@ class Tape {
 function runStep(m, t) {
 
     tr = m.transitionTable[m.state.control][t.symbol]
-    
-    t.write(tr.writeSymbol);
-    m.state.control(tr.control);
 
-    if(tr.control === m.haltingState) {
-        return 'HALT';
+    t.write(tr.writeSymbol);
+    m.state.control = tr.control;
+
+    if (tr.control === m.haltingState) {
+        return 0;
     }
 
-    switch(tr.dir) {
+    switch (tr.dir) {
         case direction.RIGHT:
             t.moveRight();
-            break;  
+            break;
         case direction.LEFT:
             t.moveLeft();
             break;
         default:
-            return 
+            return 0
     }
 
+    return 1;
 
 }
 
@@ -115,6 +116,7 @@ function initTuringMachine(states, colors, blank, numberTM) {
 
     //fill the transition table table
     for (i = states - 1; i >= 0; i--) {
+        m.transitionTable[i] = []
         for (j = 0; j < colors; j++) {
             gc = Math.floor(numberTM / (colors * ((2 * states) + 1)));
             gr = numberTM - gc * (colors * ((2 * states) + 1));
@@ -122,6 +124,7 @@ function initTuringMachine(states, colors, blank, numberTM) {
             rest = gr;
             numberTM = gc;
 
+            m.transitionTable[i][j] = new TransitionResult()
             if (rest < colors) {
                 m.transitionTable[i][j].control = m.haltingState;
                 m.transitionTable[i][j].writeSymbol = rest;
@@ -138,3 +141,14 @@ function initTuringMachine(states, colors, blank, numberTM) {
     return m;
 
 }
+
+(function () {
+    const m = initTuringMachine(2, 2, 'B', 231);
+    const t = new Tape();
+
+    for (i = 0; i < 20000 && runStep(m, t); i++) {
+    }
+
+    
+
+})()
