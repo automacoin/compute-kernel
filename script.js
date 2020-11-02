@@ -45,18 +45,18 @@ class Tape {
 
 /** Here a definition of a triple which expresses the result of a single step of computation */
 class Result {
-    constructor(control, write, dir) {
-        this.control = control;
-        this.write = write;
-        this.dir = dir;
+    constructor() {
+        this.control = null;
+        this.write = null;
+        this.dir = null;
     }
 }
 
 /** The following class represents the instantaneous description of a TM */
 class Description {
-    constructor(control, head) {
-        this.control = control;
-        this.head = head;
+    constructor() {
+        this.control = null;
+        this.head = null;
     }
 }
 
@@ -88,13 +88,36 @@ function step(m, t) {
 
 /** The actual class which models a complete Turing Machine */
 class TuringMachine {
-    constructor(colors, states, blank, halting, description, init) {
+    constructor(colors, states, blank, halting, init) {
         this.table = [];
         this.colors = colors;
         this.states = states;
         this.blank = blank;
         this.halting = halting;
-        this.description = description;
+        this.description = new Description();
         this.init = init;
     }
 }
+
+/** This function summarizes the preparatory settings one should set to properly configure a machine */
+function bootstrap(colors, states, blank, number) {
+
+    let m = new TuringMachine(colors, states, blank, -1, 0);
+    for (let i = 0; i < states; i++) {
+        m.table.push([]);
+        for (let j = 0; j < colors; j++) {
+            m.table[i].push(new Result());
+        }
+    }
+
+    for (i = states - 1; i >= 0; i--) {
+        for (j = 0; j < colors; j++) {
+
+        }
+    }
+
+    console.log(m.table)
+
+}
+
+bootstrap(5, 5, 0, 43);
