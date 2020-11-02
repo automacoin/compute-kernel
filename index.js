@@ -39,7 +39,7 @@ class Tape {
     constructor() {
         this._tape = [0];
         this._head = 0;
-        this.blank = 'BLANK';
+        this.blank = 'B';
     }
 
     moveRight() {
@@ -121,8 +121,9 @@ function initTuringMachine(states, colors, blank, numberTM) {
             gc = Math.floor(numberTM / (colors * ((2 * states) + 1)));
             gr = numberTM - gc * (colors * ((2 * states) + 1));
 
-            rest = gr;
             numberTM = gc;
+            rest = gr;
+            
 
             m.transitionTable[i][j] = new TransitionResult()
             if (rest < colors) {
