@@ -2,8 +2,8 @@
 let direction
 
 (function (direction) {
-    direction[direction["LEFT"] = 0] = "LEFT";
-    direction[direction["RIGHT"] = 0] = "RIGHT";
+    direction[direction["LEFT"] = -1] = "LEFT";
+    direction[direction["RIGHT"] = 1] = "RIGHT";
     direction[direction["STOP"] = 0] = "STOP";
 })(direction || (direction = {}));
 
@@ -54,14 +54,14 @@ class Result {
 
 /** The following class represents the instantaneous description of a TM */
 class Description {
-    constructor() {
-        this.control = null;
-        this.head = null;
+    constructor(control) {
+        this.control = control;
     }
 }
 
 /** This function define the behaviour of what is a single step of a turing machine computation */
 function step(m, t) {
+    console.log(m, t);
     r = m.table[m.description.control][t.read()];
 
     t.inscribe(r.write);
@@ -94,15 +94,22 @@ class TuringMachine {
         this.states = states;
         this.blank = blank;
         this.halting = halting;
-        this.description = new Description();
+        this.description = new Description(init);
         this.init = init;
     }
 }
 
 /** This function summarizes the preparatory settings one should set to properly configure a machine */
-function bootstrap(colors, states, blank, number) {
+function boot(colors, states, blank, number) {
+
+    if ([...number].length > states * colors) {
+        return console.log(`{ERROR: number ${number} doesn't represent a TM in the space D(${states},${colors})`);
+    }
 
     let m = new TuringMachine(colors, states, blank, -1, 0);
+    const base = colors * (2 * states) + colors;
+    let r;
+
     for (let i = 0; i < states; i++) {
         m.table.push([]);
         for (let j = 0; j < colors; j++) {
@@ -112,12 +119,40 @@ function bootstrap(colors, states, blank, number) {
 
     for (i = states - 1; i >= 0; i--) {
         for (j = 0; j < colors; j++) {
+            r = number % base;
+            number = Math.floor((number - r) / base);
 
+            if (r < colors) {
+                m.table[i][j].control = m.halting;
+                m.table[i][j].write = r;
+                m.table[i][j].dir = direction.STOP;
+            } else {
+                r = r - colors;
+                m.table[i][j].write = (r % colors);
+                r = Math.floor(r / colors);
+                m.table[i][j].dir = ((r % 2) == 0 ? direction.RIGHT : direction.LEFT);
+                r = Math.floor(r / 2);
+                m.table[i][j].control = (r % states);
+            }
         }
     }
 
     console.log(m.table)
+    return m;
 
 }
 
-bootstrap(5, 5, 0, 43);
+
+function main() {
+
+    let [colors, states, blank, number, runtime] = process.argv.slice(2);
+    let t = new Tape(parseInt(blank));
+    let m = boot(colors, states, blank, number);
+
+    do {
+        console.log(t.print(), 'I am here.');
+        runtime = runtime - 1;
+    } while (step(m, t) > 0 && runtime > 0);
+}
+
+main();
