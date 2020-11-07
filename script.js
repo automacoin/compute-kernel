@@ -1,10 +1,12 @@
+const { GPU } = require('gpu.js');
+
 /** It is needed a ENUM type which could express all possible move, now are three. */
 let direction
 
 (function (direction) {
-    direction[direction["LEFT"] = -1] = "LEFT";
-    direction[direction["RIGHT"] = 1] = "RIGHT";
-    direction[direction["STOP"] = 0] = "STOP";
+    direction[direction["LEFT"] = 0] = "LEFT";
+    direction[direction["STOP"] = 1] = "STOP";
+    direction[direction["RIGHT"] = 2] = "RIGHT";
 })(direction || (direction = {}));
 
 /** The TM's Tape blueprint with the allowable moves */
@@ -61,7 +63,7 @@ class Description {
 
 /** This function define the behaviour of what is a single step of a turing machine computation */
 function step(m, t) {
-    console.log(m, t);
+    //console.log(m, t);
     r = m.table[m.description.control][t.read()];
 
     t.inscribe(r.write);
@@ -107,7 +109,8 @@ function boot(colors, states, blank, number) {
     }
 
     let m = new TuringMachine(colors, states, blank, -1, 0);
-    const base = colors * (2 * states) + colors;
+    const base = colors * ((2 * states) + 1);
+    console.log('Base: ', base)
     let r;
 
     for (let i = 0; i < states; i++) {
@@ -137,13 +140,13 @@ function boot(colors, states, blank, number) {
         }
     }
 
-    console.log(m.table)
+    //console.log(m.table)
     return m;
 
 }
 
 
-function main() {
+function compute() {
 
     let [colors, states, blank, number, runtime] = process.argv.slice(2);
     let t = new Tape(parseInt(blank));
@@ -153,6 +156,26 @@ function main() {
         console.log(t.print(), 'I am here.');
         runtime = runtime - 1;
     } while (step(m, t) > 0 && runtime > 0);
+
+    return JSON.stringify(t.print());
 }
 
-main();
+compute();
+
+/*const gpu = new GPU();
+
+gpu.addFunction(Tape);
+gpu.addFunction(Result);
+gpu.addFunction(Description);
+gpu.addFunction(TuringMachine);
+gpu.addFunction(step);
+gpu.addFunction(boot);
+gpu.addFunction(compute);
+
+const kernel = gpu.createKernel(function() {
+    console.log(compute(2, 2, 0, this.thread.x + 1, 500))
+
+    return 1
+}).setOutput([10]);
+
+kernel();*/
