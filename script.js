@@ -1,82 +1,79 @@
 /** This function define the behaviour of what is a single step of a turing machine computation */
-function step(m, t) {
-    r = m.table[m.description.control][t.read()];
+function step(table, control, head, tape, blank, halt, runtime) {
 
-    t.inscribe(r.write);
-    m.description.control = r.control;
+    let result = table[control][tape[head]];
+
+    // the triple which represents a move is [control, write, dir]
+    tape[head] = result[1]
+    control = result[0];
 
     // 0 represents the halting interrupt
-    if (r.control === m.halting) {
-        return 0;
+    if (result[0] === halt || runtime === 0) {
+        return tape;
     }
 
-    switch (r.dir) {
-        case 0:
-            t.toLeft();
-            break;
-        case 2:
-            t.toRight();
-            break;
+    if (result[2] > 1) {
+        if (head === tape.length - 1) {
+            tape.push(blank);
+        }
+        head++;
+    } else {
+        if (head === 0) {
+            tape.unshift(blank);
+        }
     }
+
+    runtime--;
 
     // 1 represents the output 'ready' to new moves.
-    return 1;
+    return step(table, control, head, tape, blank, halt, runtime);
 
 }
 
 /** This function summarizes the preparatory settings one should set to properly configure a machine */
-function boot(colors, states, blank, number) {
+function boot(number, colors, states) {
 
     if ([...number].length > states * colors) {
-        return console.log(`{ERROR: number ${number} doesn't represent a TM in the space D(${states},${colors})`);
+        throw new Error(`ERROR: number ${number} doesn't represent a TM in the space D(${states},${colors})`);
     }
 
-    /** The actual object which models a complete Turing Machine */
-    let m = {
-        table: [],
-        colors,
-        states,
-        blank,
-        halting: -1,
-        description: {
-            control: 0
-        },
-        init: 0
-
-    }
+    /** The actual model of a complete Turing Machine */
+    let table = [];
 
     const base = colors * ((2 * states) + 1);
-    //console.log('Base: ', base)
-    let r;
+
+    let r = -7;
 
     for (let i = 0; i < states; i++) {
-        m.table.push([]);
+        table.push([]);
         for (let j = 0; j < colors; j++) {
-            m.table[i].push({});
+            table[i].push([null, null, null]);
         }
     }
 
+    // the triple which represents a move is [control, write, dir]
     for (i = states - 1; i >= 0; i--) {
         for (j = 0; j < colors; j++) {
             r = number % base;
             number = Math.floor((number - r) / base);
 
             if (r < colors) {
-                m.table[i][j].control = m.halting;
-                m.table[i][j].write = r;
-                m.table[i][j].dir = 1;
+                table[i][j][0] = -1; //halting state
+                table[i][j][1] = r;
+                table[i][j][2] = 1;
             } else {
                 r = r - colors;
-                m.table[i][j].write = (r % colors);
+                table[i][j][1] = (r % colors);
                 r = Math.floor(r / colors);
-                m.table[i][j].dir = ((r % 2) == 0 ? 2 : 0);
+                table[i][j][2] = ((r % 2) == 0 ? 2 : 0);
                 r = Math.floor(r / 2);
-                m.table[i][j].control = (r % states);
+                table[i][j][0] = (r % states);
             }
         }
     }
 
-    return m;
+
+    return table;
 
 }
 
@@ -86,46 +83,25 @@ function compute() {
     let [colors, states, blank, number, runtime] = process.argv.slice(2);
     blank = parseInt(blank);
 
-    /** The TM's Tape blueprint with the allowable moves */
-    let t = {
-        _tape: [blank],
-        _head: 0,
-        blank: blank,
+    // The TM's Tape, blank at start
+    let tape = [blank, blank];
 
+    // the computation starts at position zero
+    let head = 0;
 
-        toRight: function () {
-            if (this._head === this._tape.length - 1) {
-                this._tape.push(this.blank);
-            }
-            this._head++;
-        },
+    // the triple [table, control, halting] represents a complete turing machine 
+    const table = boot(number, colors, states);
 
-        toLeft: function () {
-            if (this._head === 0) {
-                this._tape.unshift(this.blank);
-            }
-            this._head--;
-        },
+    const init = 0;
+    const halt = -1;
 
-        inscribe: function (symbol) {
-            this._tape[this._head] = symbol;
-        },
+    // the actual computation
+    step(table, init, head, tape, blank, halt, runtime);
 
-        read: function () {
-            return this._tape[this._head];
-        },
-
-        print: function () {
-            return this._tape;
-        },
-    }
-
-    let m = boot(colors, states, blank, number);
-
-    while (step(m, t) > 0 && runtime --> 0) { }
-
-    return console.log(t.print());
+    console.log(tape.join(''));
+    return 1
 }
 
 compute();
 
+//node script.js 2 2 0 4607 20
