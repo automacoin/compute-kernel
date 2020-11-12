@@ -106,7 +106,7 @@ function boot(number, colors, states) {
 
 }
 
-
+/** This routine executes a batch of turing machine and gives back to the caller the array of output tapes */
 function compute() {
 
     // Arguments:
@@ -116,16 +116,17 @@ function compute() {
     // - first TM
     // - last TM
 
-    let output = [];
     let [states, colors, runtime, currentTM, lastTM] = process.argv.slice(2);
     let tape;
     let head;
     let table;
+    let output = [];
 
     const blank = 0;
     const init = 0;
     const halt = -1;
 
+    runtime = parseInt(runtime);
     states = parseInt(states);
     colors = parseInt(colors);
     currentTM = parseInt(currentTM);
@@ -133,7 +134,6 @@ function compute() {
 
     while (currentTM < lastTM + 1) {
 
-        console.log(currentTM)
         // The TM's Tape, blank at start
         tape = [blank];
 
@@ -146,9 +146,10 @@ function compute() {
         // the actual computation, is a recursion until runtime is reached or the machine halts
         step(table, init, head, tape, blank, halt, runtime);
 
-        console.log(tape.join(''));
+        console.log(`\nTuring Machine ${currentTM} has been executed with output:\n`,tape.join(''));
 
         output.push(tape.join(''));
+
         currentTM++;
     }
 
