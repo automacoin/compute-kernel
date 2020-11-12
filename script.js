@@ -1,3 +1,32 @@
+/**********************************************************************************************************************************************
+**                   ___      __    __  .___________. ______   .___  ___.      ___       ______   ______    __  .__   __.                    **
+**                  /   \    |  |  |  | |           |/  __  \  |   \/   |     /   \     /      | /  __  \  |  | |  \ |  |                    **  
+**                 /  ^  \   |  |  |  | `---|  |----|  |  |  | |  \  /  |    /  ^  \   |  ,----'|  |  |  | |  | |   \|  |                    **  
+**                /  /_\  \  |  |  |  |     |  |    |  |  |  | |  |\/|  |   /  /_\  \  |  |     |  |  |  | |  | |  . `  |                    **  
+**               /  _____  \ |  `--'  |     |  |    |  `--'  | |  |  |  |  /  _____  \ |  `----.|  `--'  | |  | |  |\   |                    **  
+**              /__/     \__\ \______/      |__|     \______/  |__|  |__| /__/     \__\ \______| \______/  |__| |__| \__|                    **  
+**    ______   ______   .___  ___. .______    __    __  .___________._______     __  ___  _______ .______     .__   __.  _______  __         **
+**   /      | /  __  \  |   \/   | |   _  \  |  |  |  | |           |   ____|    |  |/  / |   ____||   _  \    |  \ |  | |   ____||  |       **
+**  |  ,----'|  |  |  | |  \  /  | |  |_)  | |  |  |  | `---|  |----|  |__       |  '  /  |  |__   |  |_)  |   |   \|  | |  |__   |  |       **
+**  |  |     |  |  |  | |  |\/|  | |   ___/  |  |  |  |     |  |    |   __|      |    <   |   __|  |      /    |  . `  | |   __|  |  |       **
+**  |  `----.|  `--'  | |  |  |  | |  |      |  `--'  |     |  |    |  |____     |  .  \  |  |____ |  |\  \----|  |\   | |  |____ |  `----.  **
+**   \______| \______/  |__|  |__| | _|       \______/      |__|    |_______|    |__|\__\ |_______|| _| `._____|__| \__| |_______||_______|  **
+**                                                                                                                                           **
+***********************************************************************************************************************************************/
+
+
+// example: $ node script.js 2 2 20 4607 4615
+// Arguments:
+// - <states>
+// - <colors>
+// - max runtime
+// - first TM
+// - last TM
+
+
+/** A JavaScript library for arbitrary-precision decimal and non-decimal arithmetic */
+const BigNumber = require('bignumber.js');
+
 /** This function define the behaviour of what is a single step of a turing machine computation */
 function step(table, control, head, tape, blank, halt, runtime) {
 
@@ -33,7 +62,7 @@ function step(table, control, head, tape, blank, halt, runtime) {
 /** This function summarizes the preparatory settings one should set to properly configure a machine */
 function boot(number, colors, states) {
 
-    if ([...number].length > states * colors) {
+    if (number.toString().length > states * colors) {
         throw new Error(`ERROR: number ${number} doesn't represent a TM in the space D(${states},${colors})`);
     }
 
@@ -42,7 +71,7 @@ function boot(number, colors, states) {
 
     const base = colors * ((2 * states) + 1);
 
-    let r = -7;
+    let r = -1;
 
     for (let i = 0; i < states; i++) {
         table.push([]);
@@ -80,28 +109,50 @@ function boot(number, colors, states) {
 
 function compute() {
 
-    let [colors, states, blank, number, runtime] = process.argv.slice(2);
-    blank = parseInt(blank);
+    // Arguments:
+    // - <states>
+    // - <colors>
+    // - max runtime
+    // - first TM
+    // - last TM
 
-    // The TM's Tape, blank at start
-    let tape = [blank, blank];
+    let output = [];
+    let [states, colors, runtime, currentTM, lastTM] = process.argv.slice(2);
+    let tape;
+    let head;
+    let table;
 
-    // the computation starts at position zero
-    let head = 0;
-
-    // the triple [table, control, halting] represents a complete turing machine 
-    const table = boot(number, colors, states);
-
+    const blank = 0;
     const init = 0;
     const halt = -1;
 
-    // the actual computation
-    step(table, init, head, tape, blank, halt, runtime);
+    states = parseInt(states);
+    colors = parseInt(colors);
+    currentTM = parseInt(currentTM);
+    lastTM = parseInt(lastTM);
 
-    console.log(tape.join(''));
-    return 1
+    while (currentTM < lastTM + 1) {
+
+        console.log(currentTM)
+        // The TM's Tape, blank at start
+        tape = [blank];
+
+        // the computation starts at position zero
+        head = 0;
+
+        // the triple [table, control, halting] represents a complete turing machine 
+        table = boot(currentTM, colors, states);
+
+        // the actual computation, is a recursion until runtime is reached or the machine halts
+        step(table, init, head, tape, blank, halt, runtime);
+
+        console.log(tape.join(''));
+
+        output.push(tape.join(''));
+        currentTM++;
+    }
+
+    return output;
 }
 
 compute();
-
-//node script.js 2 2 0 4607 20

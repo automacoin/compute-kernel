@@ -5,5 +5,7 @@
   "repository": "https://github.com/alessio-proietti/compute-kernel.git",
   "author": "Alessio Proietti <alessio.proietti@protonmail.com>",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {
+    "bignumber.js": "^9.0.1"
+  }
 }
