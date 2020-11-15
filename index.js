@@ -44,7 +44,7 @@ program
     )
     .option(
         '-f,--first <number>',
-        'First machine to computed',
+        'First machine to compute',
         'TEST'
     )
     .option(
