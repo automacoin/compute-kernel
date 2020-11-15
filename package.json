@@ -1,11 +1,15 @@
 {
   "name": "compute-kernel",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "script.js",
   "repository": "https://github.com/alessio-proietti/compute-kernel.git",
   "author": "Alessio Proietti <alessio.proietti@protonmail.com>",
   "license": "MIT",
   "dependencies": {
-    "bignumber.js": "^9.0.1"
+    "bignumber.js": "^9.0.1",
+    "commander": "^6.2.0"
+  },
+  "bin": {
+    "automacoin-kernel": "./index.js"
   }
 }
