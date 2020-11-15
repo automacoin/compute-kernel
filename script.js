@@ -52,10 +52,10 @@ function step(table, control, head, tape, blank, halt, runtime) {
         }
     }
 
-    runtime--;
+    //runtime--;
 
     // 1 represents the output 'ready' to new moves.
-    return step(table, control, head, tape, blank, halt, runtime);
+    return step(table, control, head, tape, blank, halt, --runtime);
 
 }
 
@@ -137,7 +137,7 @@ function compute() {
     let last = new BigNumber(lastTM);
 
     while (current.isLessThanOrEqualTo(last)) {
-        
+
         // The TM's Tape, blank at start
         tape = [blank];
 
