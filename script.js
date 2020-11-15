@@ -71,7 +71,8 @@ function boot(number, colors, states) {
 
     const base = colors * ((2 * states) + 1);
 
-    let r = -1;
+    let r;
+    let gr;
 
     for (let i = 0; i < states; i++) {
         table.push([]);
@@ -83,8 +84,10 @@ function boot(number, colors, states) {
     // the triple which represents a move is [control, write, dir]
     for (i = states - 1; i >= 0; i--) {
         for (j = 0; j < colors; j++) {
-            r = number % base;
-            number = Math.floor((number - r) / base);
+            gr = number.modulo(base);
+            number = number.minus(gr).idiv(base);
+
+            r = gr.toNumber();
 
             if (r < colors) {
                 table[i][j][0] = -1; //halting state
@@ -129,11 +132,12 @@ function compute() {
     runtime = parseInt(runtime);
     states = parseInt(states);
     colors = parseInt(colors);
-    currentTM = parseInt(currentTM);
-    lastTM = parseInt(lastTM);
 
-    while (currentTM < lastTM + 1) {
+    let current = new BigNumber(currentTM);
+    let last = new BigNumber(lastTM);
 
+    while (current.isLessThanOrEqualTo(last)) {
+        
         // The TM's Tape, blank at start
         tape = [blank];
 
@@ -141,16 +145,16 @@ function compute() {
         head = 0;
 
         // the triple [table, control, halting] represents a complete turing machine 
-        table = boot(currentTM, colors, states);
+        table = boot(current, colors, states);
 
         // the actual computation, is a recursion until runtime is reached or the machine halts
         step(table, init, head, tape, blank, halt, runtime);
 
-        console.log(`\nTuring Machine ${currentTM} has been executed with output:\n`,tape.join(''));
+        console.log(`\nTuring Machine ${current.toString()} has been executed with output:\n`, tape.join(''));
 
         output.push(tape.join(''));
 
-        currentTM++;
+        current = current.plus(1);
     }
 
     return output;
