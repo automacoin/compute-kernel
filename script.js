@@ -14,16 +14,6 @@
 **                                                                                                                                           **
 ***********************************************************************************************************************************************/
 
-
-// example: $ node script.js 2 2 20 4607 4615
-// Arguments:
-// - <states>
-// - <colors>
-// - max runtime
-// - first TM
-// - last TM
-
-
 /** A JavaScript library for arbitrary-precision decimal and non-decimal arithmetic */
 const BigNumber = require('bignumber.js');
 
@@ -110,7 +100,7 @@ function boot(number, colors, states) {
 }
 
 /** This routine executes a batch of turing machine and gives back to the caller the array of output tapes */
-function compute() {
+function compute(states, colors, runtime, currentTM, lastTM) {
 
     // Arguments:
     // - <states>
@@ -119,7 +109,6 @@ function compute() {
     // - first TM
     // - last TM
 
-    let [states, colors, runtime, currentTM, lastTM] = process.argv.slice(2);
     let tape;
     let head;
     let table;
@@ -160,4 +149,4 @@ function compute() {
     return output;
 }
 
-compute();
+module.exports = { compute };
