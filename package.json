@@ -10,6 +10,6 @@
     "commander": "^6.2.0"
   },
   "bin": {
-    "automacoin-kernel": "./index.js"
+    "compute-kernel": "./index.js"
   }
 }
