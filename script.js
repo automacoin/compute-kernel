@@ -139,7 +139,7 @@ function compute(states, colors, runtime, currentTM, lastTM) {
         // the actual computation, is a recursion until runtime is reached or the machine halts
         step(table, init, head, tape, blank, halt, runtime);
 
-        console.log(`\nTuring Machine ${current.toString()} has been executed with output:\n`, tape.join(''));
+        //console.log(`\nTuring Machine ${current.toString()} has been executed with output:\n`, tape.join(''));
 
         output.push(tape.join(''));
 
