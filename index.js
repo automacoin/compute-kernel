@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+
 /**********************************************************************************************************************************************
 **                   ___      __    __  .___________. ______   .___  ___.      ___       ______   ______    __  .__   __.                    **
 **                  /   \    |  |  |  | |           |/  __  \  |   \/   |     /   \     /      | /  __  \  |  | |  \ |  |                    **  
@@ -17,7 +18,7 @@
 ***********************************************************************************************************************************************/
 
 
-// example: $ node index.js 2 2 20 4607 4615
+// example: $ node index.js -s 2 -c 2 -r 20 -f 4607 -l 4615
 
 // Arguments:
 // - <states>
@@ -31,29 +32,41 @@ program
     .version('0.0.1')
     .name('automacoin-kernel')
     .description('Portable Turing Machine simulator')
-    .option('-s,--states <number>', 'Number of states', 2)
-    .option(
+    .requiredOption('-s,--states <number>', 'Number of states')
+    .requiredOption(
         '-c,--colors <number>',
         'Number of colors',
-        2
     )
-    .option(
+    .requiredOption(
         '-r,--runtime <number>',
         'Max runtime',
-        500
     )
-    .option(
+    .requiredOption(
         '-f,--first <number>',
         'First machine to compute',
-        'TEST'
     )
-    .option(
+    .requiredOption(
         '-l,--last <number>',
         'Last machine to compute',
-        'TEST'
-    )
-    .parse(process.argv)
+    ).option('-q,--quiet <number>',
+        'set as 1 if no log is needed'
+    ).option('-o,--output <number>',
+        'set as 1 if you want to save the output');;
 
-// require('./script').compute(...process.argv.slice(2));
 
-require('./script').compute(program.states, program.colors, program.runtime, program.first, program.last);
+program.parse(process.argv)
+
+result = require('./script').compute(program.states, program.colors, program.runtime, program.first, program.last, program.quiet)
+
+if (program.output == 1) {
+    require('fs').writeFile('computation.txt', JSON.stringify(result), function (err) {
+        if (err) return console.log(err);
+        console.log('\n[[Compute Kernel]] computation output saved in file computation.txt\n');
+    });
+
+}
+
+if (program.quiet != 1) {
+    console.log('\nFinal output: \n\n', result);
+}
+

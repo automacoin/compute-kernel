@@ -100,7 +100,7 @@ function boot(number, colors, states) {
 }
 
 /** This routine executes a batch of turing machine and gives back to the caller the array of output tapes */
-function compute(states, colors, runtime, currentTM, lastTM) {
+function compute(states, colors, runtime, currentTM, lastTM, quietMode) {
 
     // Arguments:
     // - <states>
@@ -125,6 +125,8 @@ function compute(states, colors, runtime, currentTM, lastTM) {
     let current = new BigNumber(currentTM);
     let last = new BigNumber(lastTM);
 
+    start = Date.now();
+
     while (current.isLessThanOrEqualTo(last)) {
 
         // The TM's Tape, blank at start
@@ -139,14 +141,23 @@ function compute(states, colors, runtime, currentTM, lastTM) {
         // the actual computation, is a recursion until runtime is reached or the machine halts
         step(table, init, head, tape, blank, halt, runtime);
 
-        //console.log(`\nTuring Machine ${current.toString()} has been executed with output:\n`, tape.join(''));
+        if (quietMode != 1) {
+            console.log(`\n[[Compute Kernel]] turing machine ${current.toString()} has been executed with output: `, tape.join(''));
+        }
 
         output.push(tape.join(''));
 
         current = current.plus(1);
     }
 
-    return output;
+    return {
+        states,
+        colors,
+        runtime,
+        interval: [currentTM, lastTM],
+        duration: Date.now() - start,
+        tapes: output
+    }
 }
 
 module.exports = { compute };
