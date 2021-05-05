@@ -42,8 +42,6 @@ function step(table, control, head, tape, blank, halt, runtime) {
         }
     }
 
-    //runtime--;
-
     // 1 represents the output 'ready' to new moves.
     return step(table, control, head, tape, blank, halt, --runtime);
 
@@ -127,6 +125,10 @@ function compute(states, colors, runtime, currentTM, lastTM, quietMode) {
 
     start = Date.now();
 
+    if (quietMode != 1) {
+        console.log("\n%c[[Automacoin Kernel]]","color: orange" ,`computing turing machines in the space D(${colors},${states}) in the interval (${currentTM},${lastTM}) with max runtime ${runtime}.\n`);
+    }
+
     while (current.isLessThanOrEqualTo(last)) {
 
         // The TM's Tape, blank at start
@@ -142,7 +144,7 @@ function compute(states, colors, runtime, currentTM, lastTM, quietMode) {
         step(table, init, head, tape, blank, halt, runtime);
 
         if (quietMode != 1) {
-            console.log(`\n[[Compute Kernel]] turing machine ${current.toString()} has been executed with output: `, tape.join(''));
+            console.log(`\n[[Automacoin Kernel]] turing machine ${current.toString()} has been executed with output tape: `, tape.join(''));
         }
 
         output.push(tape.join(''));

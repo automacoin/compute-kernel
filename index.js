@@ -18,7 +18,8 @@
 ***********************************************************************************************************************************************/
 
 
-// example: $ node index.js -s 2 -c 2 -r 20 -f 4607 -l 4615
+// example:      $ node index.js -S 2 -C 2 -R 20 -F 4607 -L 4615
+// same example: $ node index.js --states 2 --colors 2 --runtime 20 --first 4607 --last 4615
 
 // Arguments:
 // - <states>
@@ -32,21 +33,21 @@ program
     .version('0.0.1')
     .name('automacoin-kernel')
     .description('Portable Turing Machine simulator')
-    .requiredOption('-s,--states <number>', 'Number of states')
+    .requiredOption('-S,--states <number>', 'Number of states')
     .requiredOption(
-        '-c,--colors <number>',
+        '-C,--colors <number>',
         'Number of colors',
     )
     .requiredOption(
-        '-r,--runtime <number>',
+        '-R,--runtime <number>',
         'Max runtime',
     )
     .requiredOption(
-        '-f,--first <number>',
+        '-F,--first <number>',
         'First machine to compute',
     )
     .requiredOption(
-        '-l,--last <number>',
+        '-L,--last <number>',
         'Last machine to compute',
     ).option('-q,--quiet <number>',
         'set as 1 if no log is needed'
@@ -61,12 +62,12 @@ result = require('./script').compute(program.states, program.colors, program.run
 if (program.output == 1) {
     require('fs').writeFile('computation.txt', JSON.stringify(result), function (err) {
         if (err) return console.log(err);
-        console.log('\n[[Compute Kernel]] computation output saved in file computation.txt\n');
+        console.log('\n[[Automacoin Kernel]] computation output saved in file computation.txt\n');
     });
 
 }
 
 if (program.quiet != 1) {
-    console.log('\nFinal output: \n\n', result);
+    console.log('\noutput: \n\n', JSON.stringify(result), '\n');
 }
 
