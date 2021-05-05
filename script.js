@@ -126,7 +126,7 @@ function compute(states, colors, runtime, currentTM, lastTM, quietMode) {
     start = Date.now();
 
     if (quietMode != 1) {
-        console.log("\n%c[[Automacoin Kernel]]","color: orange" ,`computing turing machines in the space D(${colors},${states}) in the interval (${currentTM},${lastTM}) with max runtime ${runtime}.\n`);
+        console.log("\n%c[[Automacoin Kernel]]","color: orange" ,`computing turing machines in the space D(${states},${colors}) in the interval (${currentTM},${lastTM}) with max runtime ${runtime}.\n`);
     }
 
     while (current.isLessThanOrEqualTo(last)) {
