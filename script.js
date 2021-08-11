@@ -17,6 +17,49 @@
 /** A JavaScript library for arbitrary-precision decimal and non-decimal arithmetic */
 const BigNumber = require('bignumber.js');
 
+
+/** all the step of computation till to runtime */
+function allstep(table, control, head, tape, blank, halt, runtime) {
+    while (runtime > 0) {
+        table, runtime = onestep(table, control, head, tape, blank, halt, runtime)
+        runtime--;
+    }
+}
+
+/** This function define the behaviour of what is a single step of a turing machine computation */
+function onestep(table, control, head, tape, blank, halt, runtime) {
+
+    let result = table[control][tape[head]];
+
+    // the triple which represents a move is [control, write, dir]
+    tape[head] = result[1]
+    control = result[0];
+
+    // 0 represents the halting interrupt
+    if (result[0] === halt) {
+        return { tape, runtime: -1 };
+    }
+
+    if (result[2] > 1) {
+        if (head === tape.length - 1) {
+            tape.push(blank);
+        }
+        head++;
+    } else {
+        if (head === 0) {
+            tape.unshift(blank);
+        }
+    }
+
+
+    return { tape, runtime };
+
+}
+
+
+
+/************************************************************************************************/
+
 /** This function define the behaviour of what is a single step of a turing machine computation */
 function step(table, control, head, tape, blank, halt, runtime) {
 
@@ -125,7 +168,7 @@ function compute(states, colors, runtime, currentTM, lastTM, quietMode) {
     start = Date.now();
 
     if (quietMode != 1) {
-        console.log("\n[[Automacoin Kernel]]",`computing turing machines in the space D(${states},${colors}) in the interval (${currentTM},${lastTM}) with max runtime ${runtime}.\n`);
+        console.log("\n[[Automacoin Kernel]]", `computing turing machines in the space D(${states},${colors}) in the interval (${currentTM},${lastTM}) with max runtime ${runtime}.\n`);
     }
 
     while (current.isLessThanOrEqualTo(last)) {
@@ -139,10 +182,10 @@ function compute(states, colors, runtime, currentTM, lastTM, quietMode) {
         // the triple [table, control, halting] represents a complete turing machine 
         table = boot(current, colors, states);
 
-        console.log(`\n\n\nTable of TM ${current}: \n`,table,"\n\n\n");
+        console.log(`\n\n\nTable of TM ${current}: \n`, table, "\n\n\n");
 
         // the actual computation, is a recursion until runtime is reached or the machine halts
-        step(table, init, head, tape, blank, halt, runtime);
+        allstep(table, init, head, tape, blank, halt, runtime);
 
         if (quietMode != 1) {
             console.log(`\n[[Automacoin Kernel]] turing machine ${current.toString()} has been executed with output tape: `, tape.join(''));
