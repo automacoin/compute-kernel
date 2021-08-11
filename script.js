@@ -56,7 +56,6 @@ function boot(number, colors, states) {
 
     /** The actual model of a complete Turing Machine */
     let table = [];
-
     const base = colors * ((2 * states) + 1);
 
     let r;
@@ -139,6 +138,8 @@ function compute(states, colors, runtime, currentTM, lastTM, quietMode) {
 
         // the triple [table, control, halting] represents a complete turing machine 
         table = boot(current, colors, states);
+
+        console.log(`\n\n\nTable of TM ${current}: \n`,table,"\n\n\n");
 
         // the actual computation, is a recursion until runtime is reached or the machine halts
         step(table, init, head, tape, blank, halt, runtime);
