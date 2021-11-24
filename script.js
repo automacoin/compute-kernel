@@ -184,7 +184,7 @@ function compute(states, colors, runtime, currentTM, lastTM, quietMode) {
 
         console.log(`\n\n\nTable of TM ${current}: \n`, table, "\n\n\n");
 
-        // the actual computation, is a recursion until runtime is reached or the machine halts
+        // the actual computation until runtime is reached or the machine halts
         allstep(table, init, head, tape, blank, halt, runtime);
 
         if (quietMode != 1) {
@@ -206,5 +206,5 @@ function compute(states, colors, runtime, currentTM, lastTM, quietMode) {
     }
 }
 
-console.log(boot(new BigNumber(10),2,2))
+console.log(boot(new BigNumber(10), 2, 2))
 module.exports = { compute };
