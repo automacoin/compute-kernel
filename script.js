@@ -21,7 +21,7 @@ const BigNumber = require('bignumber.js');
 /** all the step of computation till to runtime */
 function allstep(table, control, head, tape, blank, halt, runtime) {
     while (runtime > 0) {
-        table, runtime = onestep(table, control, head, tape, blank, halt, runtime)
+        tape, runtime = onestep(table, control, head, tape, blank, halt, runtime)
         runtime--;
     }
 }
@@ -206,4 +206,5 @@ function compute(states, colors, runtime, currentTM, lastTM, quietMode) {
     }
 }
 
+console.log(boot(new BigNumber(10),2,2))
 module.exports = { compute };
