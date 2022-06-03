@@ -18,8 +18,8 @@
 ***********************************************************************************************************************************************/
 
 
-// example:      $ node index.js -S 2 -C 2 -R 20 -F 4607 -L 4615
-// same example: $ node index.js --states 2 --colors 2 --runtime 20 --first 4607 --last 4615
+// example:      $ node index.js -S 2 -C 2 -R 20 -F 4607 -L 4615 -O 1
+// same example: $ node index.js --states 2 --colors 2 --runtime 20 --first 4607 --last 4615 
 
 // Arguments:
 // - <states>
@@ -32,7 +32,7 @@ const program = require('commander');
 program
     .version('0.0.1')
     .name('automacoin-kernel')
-    .description('Portable Turing Machine simulator')
+    .description('nodejs Turing Machine simulator')
     .requiredOption('-S,--states <number>', 'Number of states')
     .requiredOption(
         '-C,--colors <number>',
@@ -50,9 +50,9 @@ program
         '-L,--last <number>',
         'Last machine to compute',
     ).option('-q,--quiet <number>',
-        'set as 1 if no log is needed'
+        'set to 1 if you want to show the output of computation'
     ).option('-o,--output <number>',
-        'set as 1 if you want to save the output');;
+        'set to 1 if you want to save the output of computation');;
 
 
 program.parse(process.argv)
@@ -60,14 +60,18 @@ program.parse(process.argv)
 result = require('./script').compute(program.states, program.colors, program.runtime, program.first, program.last, program.quiet)
 
 if (program.output == 1) {
-    require('fs').writeFile('computation.txt', JSON.stringify(result), function (err) {
+
+    require('fs').existsSync("/tmp/.automacoin") || require('fs').mkdirSync("/tmp/.automacoin");
+
+    output_log = `/tmp/.automacoin/kernel_computation_${Date.now()}.txt`
+    require('fs').writeFile(output_log, JSON.stringify(result), { flag: 'a+' }, function (err) {
         if (err) return console.log(err);
-        console.log('\n[[Automacoin Kernel]] computation output saved in file computation.txt\n');
+        console.log(`\n[[Automacoin Kernel]] computation output saved in file ${output_log}\n`);
     });
 
 }
 
 if (program.quiet != 1) {
-    console.log('\noutput: \n\n', JSON.stringify(result), '\n');
+    console.log('\n[[Automacoin Kernel]] computation output: \n\n', JSON.stringify(result), '\n');
 }
 
